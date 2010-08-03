@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+import sys, re
+import os.path
+import mucroombot
+from time import sleep
+from pyxmpp.all import JID
+from urllib2 import urlopen
+from markov import MarkovChain
+from random import choice,random
+from colors import colorize,notify
+from getpass import getuser,getpass
+from BeautifulSoup import BeautifulSoup
+from pyxmpp.jabber.muc import MucRoomHandler
+
+class MucClient(MucRoomHandler):
+
+    def __init__(self,parent):
+        super(MucClient,self).__init__()
+        self.parent = parent
+
+    def message_received(self, user, stanza):
+        body=stanza.get_body()
+        if user is None or body is None: return
+        print user.nick+':',body
+        response = self.parent.autorespond(body,rate=0.1)
+        if response:
+            sleep(random())
+            self.room_state.send_message(response)
+
+#end
+
+# return list of lines in (dtime,nick,body) form
+def parse_shakespeare(pages,character=None):
+    lines = []
+    for page in pages:
+        soup = BeautifulSoup(page)
+        for e in (a for a in soup('a') if a.has_key('name')):
+            if e.b:
+                lines.append(['0',e.b.text,'']) # first elem is a fake datetime
+            elif len(lines) > 0:
+                lines[-1][2] += ' '+e.text
+    if character:
+        lines = filter(lambda l: l[1].lower() == character.lower(), lines)
+    assert len(lines) > 0
+    return lines
+
+class ShakespeareClient(mucroombot.ChatClient):
+
+    def __init__(self, jid, password, pages, character):
+        super(ShakespeareClient,self).__init__(jid,password,character)
+        self.responder = MarkovChain(parse_shakespeare(pages,self.nick if self.nick != 'will' else None))
+
+    def session_started(self):
+        self._session_started_helper(MucClient(self),JID('internchat','conference.gsc.wustl.edu'))
+
+    def autorespond(self,body,rate=0.2):
+        if random() > rate: return None
+        return self.responder.get(body)
+        
+    def message(self,stanza):
+        body=stanza.get_body()
+        frm = stanza.get_from().as_utf8().split('@')[0]
+        print stanza.get_type()
+        if stanza.get_type()=="headline": return True
+        print colorize('g',frm+':'),body
+        sleep(random())
+        response = self.autorespond(body,1.0)
+        return Message(to_jid=stanza.get_from(),
+                       from_jid=stanza.get_to(),
+                       stanza_type=stanza.get_type(),
+                       subject=stanza.get_subject(),
+                       body=response)
+
+#end class
+
+if len(sys.argv) < 3:
+    print notify('!','r',"Usage: %s <name> <shakespeare_play(s)>"%sys.argv[0])
+    sys.exit(1)
+
+# use 'will' to grab all characters
+nick = sys.argv[1]
+pages = (urlopen('http://shakespeare.mit.edu/%s/full.html'%play) for play in sys.argv[2:])
+jidname = "%s@chat.gsc.wustl.edu"%getuser()
+
+mucroombot.setup_localization()
+while mucroombot.main(lambda: ShakespeareClient(JID(jidname),getpass(),pages,nick)): pass
+# vi: sts=4 et sw=4
