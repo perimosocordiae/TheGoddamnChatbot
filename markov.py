@@ -2,9 +2,9 @@
 
 # disclaimer: not my code. borrowed this from... someone
 
-import os,re
+import os,re,random
+from glob import glob
 from datetime import datetime
-import random
 
 class BaseResponse(object):
     """Defines the interface from which all 'response' objects must inherit"""
@@ -77,50 +77,53 @@ All functions return an interable whose items are tuples in the form of:
 recordre=re.compile(r'^\((\d\d?\:\d\d\:\d\d(\s+[A|P]M)?)\)\s+(.*?)\:\s+(.*)\s*$', re.I|re.L)
 
 def PidginLogs(LogDir,select_nick=None):
-	"""Returns all conversations by parsing Pidgin log files"""
-	assert os.path.isdir(LogDir), 'Not a directory: '+str(LogDir)
-	messages=[]
-	for d in [LogDir+os.sep+f for f in os.listdir(LogDir) if os.path.isdir(LogDir+os.sep+f)]:
-		for logf in os.listdir(d):
-			doy=logf.split('.')[0]
-			logf=d+os.sep+logf
-			for rec in open(logf).readlines()[1:]:
-				t=_ParsePidginRecord(rec,doy)
-				if t and select_nick and select_nick == t[1]:
-					messages.append(t)
-				elif not _IsSystemMessage(rec):
-					pass
-					#print "malformed log record '%s'"%rec
-					#raise ValueError("malformed log record '%s' in file '%s'"%(rec,logf))
-	return messages
+    """Returns all conversations by parsing Pidgin log files"""
+    LogDir = os.path.expanduser(LogDir)
+    while True:
+        logfiles = glob(LogDir+'*.txt')
+        if len(logfiles) > 0: break
+        LogDir += ('*'+os.sep)
+    messages = []
+    for f in logfiles:
+        messages.extend(parselog(f,select_nick))
+    return messages
 
+def parselog(logf,select_nick):
+    doy = os.path.basename(logf).split('.')[0]
+    for rec in open(logf).readlines()[1:]:
+        t=_ParsePidginRecord(rec,doy)
+        if t and select_nick and select_nick == t[1]:
+            yield t
+        #elif not _IsSystemMessage(rec):
+        #    print "malformed log record '%s'"%rec
+        #    raise ValueError("malformed log record '%s' in file '%s'"%(rec,logf))
 
 def _ParsePidginRecord(recordtext,dayofyear):
-	m=recordre.search(recordtext.strip())
-	if not m: return
-	tod,isampm,scrnname,msg=m.groups()
-	if isampm:
-		dtime=datetime.strptime('%s %s'%(dayofyear,tod), '%Y-%m-%d %I:%M:%S %p')	
-	else:
-		dtime=datetime.strptime('%s %s'%(dayofyear,tod), '%Y-%m-%d %H:%M:%S')
-	return (dtime,scrnname,msg,)
+    m=recordre.search(recordtext.strip())
+    if not m: return
+    tod,isampm,scrnname,msg=m.groups()
+    if isampm:
+        dtime=datetime.strptime('%s %s'%(dayofyear,tod), '%Y-%m-%d %I:%M:%S %p')    
+    else:
+        dtime=datetime.strptime('%s %s'%(dayofyear,tod), '%Y-%m-%d %H:%M:%S')
+    return (dtime,scrnname,msg,)
 
 _SysMsgSuffixes=[
-	'has signed off.',
-	'has signed on.',
-	'logged out.',
-	'logged in.',
-	'is no longer idle.',
-	'has become idle.',
-	'has gone away.',
-	'is no longer away.',
-	'entered the room.',
-	'left the room.',
-	]
+    'has signed off.',
+    'has signed on.',
+    'logged out.',
+    'logged in.',
+    'is no longer idle.',
+    'has become idle.',
+    'has gone away.',
+    'is no longer away.',
+    'entered the room.',
+    'left the room.',
+    ]
 
 def _IsSystemMessage(recordtext):
-	recordtext=recordtext.strip()
-	for sfx in _SysMsgSuffixes:
-		if recordtext.endswith(sfx):
-			return True
-	return False
+    recordtext=recordtext.strip()
+    for sfx in _SysMsgSuffixes:
+        if recordtext.endswith(sfx):
+            return True
+    return False
