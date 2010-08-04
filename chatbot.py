@@ -1,13 +1,13 @@
 import sys
-#sys.path.insert(0,'/gscuser/ccarey/chatbot/lib/python2.5/site-packages')
-import re, locale, codecs, pickle
-import keywords, cmds, tasks
+from config import *
 from time import time
 from os import path, system
-from getpass import getpass,getuser
-from random import choice,randint,shuffle
+import keywords, cmds, tasks
 from pyxmpp.jabber.muc import *
+import re, locale, codecs, pickle
+from getpass import getpass,getuser
 from colors import colorize, notify
+from random import choice,randint,shuffle
 from markov import PidginLogs, MarkovChain
 
 def decode(str):
@@ -22,7 +22,7 @@ class ChatBot(MucRoomHandler):
         self.keywords = keywords.keywords
         self.commands = cmds.commands
         self.respond = True
-        self.responder = MarkovChain(PidginLogs('/gscuser/ccarey/.purple/logs/jabber/ccarey@chat.gsc.wustl.edu/'))
+        self.responder = MarkovChain(PidginLogs('~/.purple/logs/jabber/'))
     
     def message_received(self, user, stanza):
         body=stanza.get_body()
@@ -61,23 +61,23 @@ class ChatBot(MucRoomHandler):
             self.room_state.send_message(msg)
 
     def user_joined(self, user, stanza): pass
-        #greetings = ['Nice to see you, %s','Hey %s! Where\'s my money?','Oh... it\'s %s again',
-        #             'Finally, %s! These people are so inane!','Greetings, %s!', 'What up, %s?',
-        #             'Ah, my old enemy: %s', 'You come here often, %s?','G\'day, %s']
-        #usr = decode(user.nick)
-        #if usr != self.name:
-        #    self.room_state.send_message(choice(greetings)%usr)
+#        greetings = [
+#'Nice to see you, %s','Hey %s! Where\'s my money?','Oh... it\'s %s again',
+#'Finally, %s! These people are so inane!','Greetings, %s!', 'What up, %s?',
+#'Ah, my old enemy: %s', 'You come here often, %s?','G\'day, %s']
+#        usr = decode(user.nick)
+#        if usr != self.name:
+#            self.room_state.send_message(choice(greetings)%usr)
 
     def nick_changed(self, user, old_nick, stanza):
         if decode(old_nick) == self.name:
             self.name = decode(user.nick)
 
     def user_left(self, user, stanza): pass
-        #usr = decode(user.nick)
-        #if usr == self.name:
-        #    msg = "Hasta la vista, babies!"
-        #else:
-        #    msg = "So long, and thanks for all the fish, %s."%usr
-        #self.room_state.send_message(msg)
-
+#        usr = decode(user.nick)
+#        if usr == self.name:
+#            msg = "Hasta la vista, babies!"
+#        else:
+#            msg = "So long, and thanks for all the fish, %s."%usr
+#        self.room_state.send_message(msg)
 #end

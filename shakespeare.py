@@ -2,6 +2,7 @@
 import sys, re
 import os.path
 import mucroombot
+from config import *
 from time import sleep
 from pyxmpp.all import JID
 from urllib2 import urlopen
@@ -51,7 +52,7 @@ class ShakespeareClient(mucroombot.ChatClient):
         self.responder = MarkovChain(parse_shakespeare(pages,self.nick if self.nick != 'will' else None))
 
     def session_started(self):
-        self._session_started_helper(MucClient(self),JID('internchat','conference.gsc.wustl.edu'))
+        self._session_started_helper(MucClient(self),JID(MUC_ROOM,MUC_SERVER))
 
     def autorespond(self,body,rate=0.2):
         if random() > rate: return None
@@ -80,7 +81,7 @@ if len(sys.argv) < 3:
 # use 'will' to grab all characters
 nick = sys.argv[1]
 pages = (urlopen('http://shakespeare.mit.edu/%s/full.html'%play) for play in sys.argv[2:])
-jidname = "%s@chat.gsc.wustl.edu"%getuser()
+jidname = getuser()+'@'+DOMAIN
 
 mucroombot.setup_localization()
 while mucroombot.main(lambda: ShakespeareClient(JID(jidname),getpass(),pages,nick)): pass

@@ -1,6 +1,36 @@
 This is the README.
-It wants to be read.
 
-But it has no worthwhile content... yet.
+====== Getting this code to work ======
+For starters, you're going to need to have a few dependencies met:
+ * A modern *nix system (should work on OSX, in theory)
+ * Python 2.6+ (2.5 can work, if you backport some libs)
+ * The following packages installed, on your PYTHONPATH:
+	BeautifulSoup
+	psutil
+	dnspython
+	pyxmpp
+	subprocess (comes with 2.6+ by default)
+	twython
 
-Q_Q
+The 'dependencies.py' script can tell you which modules you're missing.
+Once it reports that everything is in order, you should be able to run
+'cb_repl.py' and experiment with chatbot's triggers.
+
+To actually run chatbot in a MUC room, you need to do the following:
+ * patch pyxmpp's old-style classes
+    - find pyxmpp's directory on your system (look in sys.path)
+	- add (object) to the class declarations of:
+	  - in pyxmpp/client.py,38: class Client
+	  - in pyxmpp/jabber/muc.py,42: class MucRoomHandler
+ * edit the constants in 'config.py' to point to your stuff
+
+====== Playing with this code ======
+ * The easiest (but least fun) thing to play with is 'cb_repl.py'.
+    It provides a REPL-like environment for running chatbot's
+	trigger commands. Note that not all of them will work outside
+	of the chatroom context.
+ * Load up chatbot by running 'bot.py'
+ * Load an auto-responding Shakespeare bot with 'shakespeare.py'
+ * Load a clone of someone in your Pidgin logs with 'clone.py'
+ * Interact with a MUC room in your terminal with 'cli.py'
+

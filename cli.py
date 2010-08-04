@@ -2,6 +2,7 @@
 import mucroombot
 import tty,termios
 import sys, os.path
+from config import *
 from random import choice
 from select import select
 from colors import colorize,notify
@@ -49,8 +50,8 @@ class MucClient(MucRoomHandler):
         
 class CLIClient(mucroombot.ChatClient):
 
-    def __init__(self, jid, password):
-        super(CLIClient,self).__init__(jid,password,jid.node)
+    def __init__(self, jid, password,nick):
+        super(CLIClient,self).__init__(jid,password,nick)
         self.history = ['']
         self.msg_idx = 0
 
@@ -75,7 +76,7 @@ class CLIClient(mucroombot.ChatClient):
             self.history[self.msg_idx] += c
 
     def session_started(self):
-        self._session_started_helper(MucClient(),JID('internchat','conference.gsc.wustl.edu'))
+        self._session_started_helper(MucClient(),JID(MUC_ROOM,MUC_SERVER))
 
     def message(self,stanza):
         body=stanza.get_body()
@@ -107,13 +108,15 @@ def loop(c):
 
 
 if len(sys.argv) == 1:
-    jidname = "%s@chat.gsc.wustl.edu"%getuser()
-    print notify('!','y',"Assuming you are %s\nIf this is wrong, pass your JID as the first parameter"%jidname)
+    nick = getuser()
+    print notify('!','y',"Assuming you are %s\nIf this is wrong, pass your nick as the first parameter"%nick)
 else:
-    jidname = sys.argv[1]
+    nick = sys.argv[1]
+
+jidname = nick+'@'+DOMAIN
 
 while True:
-    c = CLIClient(JID(jidname),getpass())
+    c = CLIClient(JID(jidname),getpass(),nick)
     print "Connecting..."
     c.connect()
 

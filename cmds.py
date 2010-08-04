@@ -77,7 +77,7 @@ def cmd_twitstat(obj,frm,txt):
         return "Error getting twitter status for %s: %s"%(match.group(1),e)
 
 def cmd_train(obj,frm,txt):
-    proc = subprocess.Popen(['/gscuser/ccarey/train.rb'],stdout=subprocess.PIPE)
+    proc = subprocess.Popen('~ccarey/train.rb',stdout=subprocess.PIPE,shell=True)
     out,_ = proc.communicate()
     return "\n"+out.rstrip()
 

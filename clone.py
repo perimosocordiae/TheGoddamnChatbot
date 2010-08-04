@@ -2,6 +2,7 @@
 import sys,re
 import os.path
 import mucroombot
+from config import *
 from pyxmpp.all import JID
 from random import choice,random
 from colors import colorize,notify
@@ -29,10 +30,10 @@ class CloneClient(mucroombot.ChatClient):
 
     def __init__(self, jid, password, nick):
         super(CloneClient,self).__init__(jid,password,nick)
-        self.responder = MarkovChain(PidginLogs('/gscuser/ccarey/.purple/logs/jabber/%s/'%jid.as_utf8(),select_nick=nick))
+        self.responder = MarkovChain(PidginLogs('~/.purple/logs/jabber/%s/'%jid.as_utf8(),select_nick=nick))
 
     def session_started(self):
-        self._session_started_helper(MucClient(self),JID('internchat','conference.gsc.wustl.edu'))
+        self._session_started_helper(MucClient(self),JID(MUC_ROOM,MUC_SERVER))
 
     def autorespond(self,body):
         if (not self.nick in body) and random() < 0.6: return None
@@ -60,7 +61,7 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 nick = sys.argv[1]
-jidname = "%s@chat.gsc.wustl.edu"%getuser()
+jidname = getuser()+'@'+DOMAIN
 
 mucroombot.setup_localization()
 while mucroombot.main(lambda: CloneClient(JID(jidname),getpass(),nick)): pass
