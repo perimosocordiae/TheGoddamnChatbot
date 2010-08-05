@@ -1,13 +1,24 @@
 #!/usr/bin/env python
 
+import readline
 from cmds import commands
 from getpass import getuser
 
 uname = getuser()
 print """Enter a command at the prompt
-    !cmds will print a list of available commands
+    TAB complete to find commands
     Ctrl-C or Ctrl-D (EOF) to quit
     Note that not all commands will work outside of chat"""
+
+def complete(text, state):
+    for cmd in (c for c in commands.iterkeys() if c.startswith(text)):
+        if not state:
+            return cmd
+        else:
+            state -= 1
+
+readline.parse_and_bind('tab: complete')
+readline.set_completer(complete)
 
 while True:
     try:
