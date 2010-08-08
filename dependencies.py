@@ -16,9 +16,15 @@ def try_import(i):
 
 missing = set(str(e) for e in (try_import(i) for i in imports) if e)
 
-if len(missing) == 0:
-	print 'All dependencies satisfied!'
-else:
+if len(missing) != 0:
 	print 'The following packages were not found:'
 	for m in sorted(missing):
 		print '  ',m[m.rfind(' ')+1:]
+else:
+	print 'All dependencies satisfied!'
+	import pyxmpp
+	path = pyxmpp.__path__[0]
+	subprocess.Popen("sudo sed -i'.bak' -e's/class Client\:/class Client(object):/' %s/client.py"%path,shell=True).communicate()
+	subprocess.Popen("sudo sed -i'.bak' -e's/class MucRoomHandler\:/class MucRoomHandler(object):/' %s/jabber/muc.py"%path,shell=True).communicate()
+	print 'pyxmpp classes patched'
+

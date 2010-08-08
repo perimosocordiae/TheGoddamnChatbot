@@ -13,16 +13,12 @@ For starters, you're going to need to have a few dependencies met:
 	twython
 
 The 'dependencies.py' script can tell you which modules you're missing.
+It also patches some old-style classes in the pyxmpp module.
 Once it reports that everything is in order, you should be able to run
 'cb_repl.py' and experiment with chatbot's triggers.
 
-To actually run chatbot in a MUC room, you need to do the following:
- * patch pyxmpp's old-style classes
-    - find pyxmpp's directory on your system (look in sys.path)
-	- add (object) to the class declarations of:
-	  - in pyxmpp/client.py,38: class Client
-	  - in pyxmpp/jabber/muc.py,42: class MucRoomHandler
- * edit the constants in 'config.py' to point to your stuff
+To actually run chatbot in a MUC room, edit the constants in 
+  'config.py' to point to your room and server.
 
 ====== Playing with this code ======
  * The easiest (but least fun) thing to play with is 'cb_repl.py'.
