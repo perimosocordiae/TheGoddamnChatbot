@@ -1,6 +1,7 @@
 '''A port of the web-based "zalgo text generator"'''
 
 from random import choice,randint
+from itertools import imap,chain
 
 zalgo_up = [u'\u030d', u'\u030e', u'\u0304', u'\u0305', u'\u033f', u'\u0311',
             u'\u0306', u'\u0310', u'\u0352', u'\u0357', u'\u0351', u'\u0307',
@@ -20,18 +21,19 @@ zalgo_mid = [u'\u0315', u'\u031b', u'\u0340', u'\u0341', u'\u0358', u'\u0321',
              u'\u0322', u'\u0327', u'\u0328', u'\u0334', u'\u0335', u'\u0336',
              u'\u034f', u'\u035c', u'\u035d', u'\u035e', u'\u035f', u'\u0360',
              u'\u0362', u'\u0338', u'\u0337', u'\u0361', u'\u0489']
- 
+
 def blargltext(text,amt=3,mid=True,high=False,low=False):
     assert mid or high or low
     assert amt > 0
-    blargl = []
-    for c in list(text):
-        blargl.append(c)
+    zalgos = [z for z in [ zalgo_mid  if mid else None,
+                           zalgo_up  if high else None,
+                           zalgo_down if low else None ] if z]
+    def cthulufy(c):
+        chars = [c]
         if 32 < ord(c) < 127:
-            for _ in xrange(randint(1,amt)):
-                if mid:  blargl.append(choice(zalgo_mid))
-                if high: blargl.append(choice(zalgo_up))
-                if low:  blargl.append(choice(zalgo_down))
-    return u''.join(blargl)
+            for z in zalgos:
+                chars.extend(choice(z) for _ in xrange(randint(1,amt)))
+        return chars
+    return u''.join(chain(*imap(cthulufy,iter(text))))
 
 
