@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 import sys, locale, codecs
 from colors import colorize,notify
-
-from pyxmpp.all import JID,Iq,Presence,Message,StreamError,SASLAuthenticationFailed
+from pyxmpp.streamtls import TLSSettings
+from pyxmpp.jabber.muc import MucRoomManager
 from pyxmpp.jabber.client import JabberClient
-from pyxmpp import streamtls
-from pyxmpp.jabber.muc import *
+from pyxmpp.all import JID,SASLAuthenticationFailed
 
 class ChatClient(JabberClient):
 
     def __init__(self, jid, password, nick):
         self.nick = nick
         self.jid = jid if jid.resource else JID(jid.node, jid.domain, "Robot-"+self.nick)
-        tls = streamtls.TLSSettings(require=True, verify_peer=False)
-        JabberClient.__init__(self, self.jid, password, disco_name="chatbot", disco_type="user",
-                tls_settings=tls, auth_methods=['sasl:PLAIN'])
+        tls = TLSSettings(require=True, verify_peer=False)
+        JabberClient.__init__(self, self.jid, password, disco_name="chatbot", disco_type="user", tls_settings=tls, auth_methods=['sasl:PLAIN'])
         self.disco_info.add_feature("jabber:iq:version")
 
     def message(self,stanza):

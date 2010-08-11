@@ -1,6 +1,7 @@
-from random import random
-from colors import colorize
 import re
+from random import random
+from config import BOT_NAME
+from colors import colorize
 
 def autorespond(obj,body):
     obj.responder.addWords(body)
@@ -8,7 +9,7 @@ def autorespond(obj,body):
     r = obj.responder.get(body)
     rr = repr(r)
     if rr[rr.find("'")+1:rr.rfind("'")] != r: return None
-    blacklist = ['chatbot','!','spawn']
+    blacklist = [BOT_NAME,'!','spawn']
     if len(r.split()) < 2 or any(w in r for w in blacklist): return None
     print colorize('b',"autoresponse:"),rr
     return r

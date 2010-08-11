@@ -12,7 +12,7 @@ from pyxmpp.jabber.muc import MucRoomHandler
 class Client(mucroombot.ChatClient):
 
     def session_started(self):
-        self._session_started_helper(ChatBot('chatbot'),JID(MUC_ROOM,MUC_SERVER))
+        self._session_started_helper(ChatBot(BOT_NAME),JID(MUC_ROOM,MUC_SERVER))
 
     def message(self,stanza):
         return True
@@ -28,6 +28,6 @@ if __name__ == '__main__':
         nick = sys.argv[1]
     jidname = nick+'@'+DOMAIN
     mucroombot.setup_localization()
-    while mucroombot.main(lambda: Client(JID(jidname),getpass(),'chatbot')): pass
+    while mucroombot.main(lambda: Client(JID(jidname),getpass(),BOT_NAME)): pass
 
 # vi: sts=4 et sw=4
