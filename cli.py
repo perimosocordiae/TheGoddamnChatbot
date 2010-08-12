@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-import mucroombot
 import tty,termios
 import sys, os.path
-from config import *
 from random import choice
 from select import select
-from colors import colorize,notify
+from tgdcb.config import *
+from tgdcb import mucroombot
 from getpass import getpass,getuser
+from tgdcb.colors import colorize,notify
 from pyxmpp.jabber.muc import MucRoomHandler
 from pyxmpp.all import JID,SASLAuthenticationFailed
 
@@ -76,7 +76,7 @@ class CLIClient(mucroombot.ChatClient):
             self.history[self.msg_idx] += c
 
     def session_started(self):
-        self._session_started_helper(MucClient(),JID(MUC_ROOM,MUC_SERVER))
+        self._session_started_helper(MucClient(),JID(ROOM,SERVER))
 
     def message(self,stanza):
         body=stanza.get_body()
@@ -113,7 +113,10 @@ if len(sys.argv) == 1:
 else:
     nick = sys.argv[1]
 
-jidname = nick+'@'+DOMAIN
+if ROOM_TYPE == 'MUC':
+    jidname = nick+'@'+DOMAIN
+else:
+    sys.exit(notify('!','r',"%s is not supported yet"%ROOM_TYPE))
 
 while True:
     c = CLIClient(JID(jidname),getpass(),nick)

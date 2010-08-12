@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import sys,re
 import os.path
-import mucroombot
-from config import *
+from tgdcb.config import *
 from pyxmpp.all import JID
+from tgdcb import mucroombot
 from random import choice,random
-from colors import colorize,notify
 from getpass import getuser,getpass
-from markov import PidginLogs, MarkovChain
+from tgdcb.colors import colorize,notify
 from pyxmpp.jabber.muc import MucRoomHandler
+from tgdcb.markov import PidginLogs, MarkovChain
 
 class MucClient(MucRoomHandler):
 
@@ -33,7 +33,7 @@ class CloneClient(mucroombot.ChatClient):
         self.responder = MarkovChain(PidginLogs('~/.purple/logs/jabber/%s/'%jid.as_utf8(),select_nick=nick))
 
     def session_started(self):
-        self._session_started_helper(MucClient(self),JID(MUC_ROOM,MUC_SERVER))
+        self._session_started_helper(MucClient(self),JID(ROOM,SERVER))
 
     def autorespond(self,body):
         if (not self.nick in body) and random() < 0.6: return None
@@ -59,8 +59,12 @@ class CloneClient(mucroombot.ChatClient):
 if len(sys.argv) != 2:
     print notify('!','r',"Usage: %s <nick_to_clone>"%sys.argv[0])
     sys.exit(1)
-
 nick = sys.argv[1]
+
+if ROOM_TYPE == 'MUC':
+    jidname = nick+'@'+DOMAIN
+else:
+    sys.exit(notify('!','r',"%s is not supported yet"%ROOM_TYPE))
 jidname = getuser()+'@'+DOMAIN
 
 mucroombot.setup_localization()

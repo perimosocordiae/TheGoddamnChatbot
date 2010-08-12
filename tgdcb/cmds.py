@@ -13,6 +13,10 @@ from cthulhu import blargltext
 from math import modf
 from psutil import get_process_list
 
+def backticks(cmd):
+    '''emulate perl/ruby's `cmd` style'''
+    return subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True).communicate()[0]
+
 def cmd_reload(obj,frm,txt):
     try:
         reload(keywords)
@@ -49,11 +53,8 @@ def cmd_art(obj,frm,txt):
     match = re.match(".*art\s+([^\s.,\n]+)",txt)
     if not match: return "Usage: !art <name>"
     art_name = match.group(1)
-    proc = subprocess.Popen('figlet -f banner '+art_name,stdout=subprocess.PIPE,shell=True)
-    out,_ = proc.communicate()
-    out = out.rstrip().replace(' ','...')
+    out = backticks('figlet -f banner '+art_name).rstrip().replace(' ','...')
     return "\n"+out
-   
     
 def cmd_map(obj,frm,txt):
     match = re.match(".*map\s+(.+)",txt)
@@ -77,9 +78,7 @@ def cmd_twitstat(obj,frm,txt):
         return "Error getting twitter status for %s: %s"%(match.group(1),e)
 
 def cmd_train(obj,frm,txt):
-    proc = subprocess.Popen('~ccarey/train.rb',stdout=subprocess.PIPE,shell=True)
-    out,_ = proc.communicate()
-    return "\n"+out.rstrip()
+    return "\n"+backticks('~ccarey/train.rb').rstrip()
 
 def cmd_shutup(obj,frm,txt):
     obj.respond = False
@@ -180,9 +179,8 @@ def cmd_random(obj,frm,txt):
         return choice(input)
 
 def cmd_calendar(obj,frm,txt):
-    proc = subprocess.Popen('calendar',stdout=subprocess.PIPE,shell=True)
-    out,_ = proc.communicate()
-    return "Notable events on/around today's date:\n"+out.rstrip()
+    out = backticks('calendar').rstrip()
+    return "Notable events on/around today's date:\n"+out
 
 def cmd_timecalc(obj,frm,txt):
     match = re.match(".*t(?:ime)?calc\s+(.+)",txt)

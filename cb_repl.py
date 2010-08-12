@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import readline
-from cmds import commands
+from tgdcb.cmds import commands
 from getpass import getuser
 
 uname = getuser()

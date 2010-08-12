@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 import sys, re
 import os.path
-import mucroombot
-from config import *
 from time import sleep
+from tgdcb.config import *
 from pyxmpp.all import JID
 from urllib2 import urlopen
-from markov import MarkovChain
+from tgdcb import mucroombot
 from random import choice,random
-from colors import colorize,notify
 from getpass import getuser,getpass
+from tgdcb.markov import MarkovChain
 from BeautifulSoup import BeautifulSoup
+from tgdcb.colors import colorize,notify
 from pyxmpp.jabber.muc import MucRoomHandler
 
 class MucClient(MucRoomHandler):
@@ -52,7 +52,7 @@ class ShakespeareClient(mucroombot.ChatClient):
         self.responder = MarkovChain(parse_shakespeare(pages,self.nick if self.nick != 'will' else None))
 
     def session_started(self):
-        self._session_started_helper(MucClient(self),JID(MUC_ROOM,MUC_SERVER))
+        self._session_started_helper(MucClient(self),JID(ROOM,SERVER))
 
     def autorespond(self,body,rate=0.2):
         if random() > rate: return None

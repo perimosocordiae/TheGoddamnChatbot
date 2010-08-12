@@ -1,0 +1,12 @@
+
+BOT_NAME = 'chatbot'
+
+ROOM_TYPE = 'MUC'
+if ROOM_TYPE == 'IRC':
+    PORT = 6667
+    SERVER = 'irc.freenode.net'
+    ROOM = '##wustlacm'
+elif ROOM_TYPE == 'MUC':
+    DOMAIN = 'chat.gsc.wustl.edu'
+    SERVER = 'conference.gsc.wustl.edu'
+    ROOM = 'internchat'
