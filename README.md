@@ -21,14 +21,16 @@ Once it reports that everything is in order, you should be able to run
 `cb_repl.py` and experiment with the triggers.
 
 To actually run chatbot in a MUC room, edit the constants in 
-  `config.py` to point to your room and server.
+  `config` to point to your room and server.
 
 # Playing with this code #
  * The easiest (but least fun) thing to play with is `cb_repl.py`.
    * It provides a REPL-like environment for running chatbot's trigger commands.
    * Note that not all of them will work outside of the chatroom context.
  * Load up chatbot by running `bot.py`
+ * Load an evalbot by running `evalbot.py`
+   * Warning! Very little security is in place. Use with discretion.
  * Load an auto-responding Shakespeare bot with `shakespeare.py`
  * Load a clone of someone in your Pidgin logs with `clone.py`
- * Interact with a MUC room in your terminal with `cli.py`
+ * Chat from the comfort of your terminal with `cli.py`
 
