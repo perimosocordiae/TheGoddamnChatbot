@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os.path
-from tgdcb.config import BOT_NAME,ROOM,SERVER,DOMAIN,ROOM_TYPE
+from tgdcb.config import BOT_NAME,ROOM,SERVER,ROOM_TYPE
 from pyxmpp.all import JID
 from tgdcb.colors import notify
 from getpass import getpass,getuser
