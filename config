@@ -1,7 +1,7 @@
 
 BOT_NAME = 'chatbot'
 
-ROOM_TYPE = 'MUC'
+ROOM_TYPE = 'IRC'
 if ROOM_TYPE == 'IRC':
     PORT = 6667
     SERVER = 'irc.freenode.net'
