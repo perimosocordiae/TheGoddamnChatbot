@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import re,sys,socket
+import re,socket
 from config import *
-from colors import colorize,notify
+from colors import notify
 
 class ChatClient(object):
 

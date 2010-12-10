@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os.path
-from tgdcb.config import *
+from tgdcb.config import BOT_NAME,ROOM,SERVER,DOMAIN,ROOM_TYPE
 from pyxmpp.all import JID
 from tgdcb.colors import notify
 from getpass import getpass,getuser
@@ -27,6 +27,6 @@ if __name__ == '__main__':
         jidname = nick+'@'+DOMAIN
         while mucroombot.main(lambda: MucClient(JID(jidname),getpass(),BOT_NAME)): pass
     elif ROOM_TYPE == 'IRC':
-        while ircbot.main(lambda: IrcChatBot()): pass
+        while ircbot.main(IrcChatBot): pass
         
 # vi: sts=4 et sw=4

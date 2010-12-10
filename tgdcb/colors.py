@@ -1,4 +1,4 @@
-c = {
+COLORS = {
     'k':"[30m",
     'r':"[31m",
     'g':"[32m",
@@ -17,17 +17,18 @@ c = {
     'u':"[24m",
 }
 
-def notify(char, color, str):
-    if color[0] in c:
+def notify(char, color, string):
+    if color[0] in COLORS:
         cc = color[0]
     else:
         cc = 'E'
-    return "%s/%s\\%s %s"%(c['E']+c[cc]+c['U'],char,c['x'],str)
+    return "%s/%s\\%s %s"%(COLORS['E']+COLORS[cc]+COLORS['U'],
+                           char,COLORS['x'],string)
 
-def colorize(color,str):
-    if not color[0] in c: return str
-    code = c[color[0]]
-    return ''.join([c['E'],code,str,c['x']])
+def colorize(color,string):
+    if not color[0] in COLORS: return string
+    code = COLORS[color[0]]
+    return ''.join([COLORS['E'],code,string,COLORS['x']])
 
 if __name__ == "__main__":
     print notify('x','r','Big bad stuff happening')

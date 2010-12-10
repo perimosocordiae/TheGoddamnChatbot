@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from random import choice,randint,shuffle
+from random import choice,randint
 from urllib2 import urlopen
 from contextlib import closing
 from BeautifulSoup import BeautifulSoup
@@ -45,9 +45,9 @@ def chkurl(frm,txt):
     url = match.group(0).replace('>','')
     try:
         with closing(urlopen(url)) as page:
-            type = page.headers.gettype()
-            if type != 'text/html':
-                return "Link points to a file of type: "+type
+            page_type = page.headers.gettype()
+            if page_type != 'text/html':
+                return "Link points to a file of type: "+page_type
             title = BeautifulSoup(page.read()).title.text
     except KeyboardInterrupt:
         return "screw you guys"

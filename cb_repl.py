@@ -11,9 +11,9 @@ print """Enter a command at the prompt
     Note that not all commands will work outside of chat"""
 
 def complete(text, state):
-    for cmd in (c for c in commands.iterkeys() if c.startswith(text)):
+    for command in (c for c in commands.iterkeys() if c.startswith(text)):
         if not state:
-            return cmd
+            return command
         else:
             state -= 1
 

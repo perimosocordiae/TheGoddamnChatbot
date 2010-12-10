@@ -1,17 +1,14 @@
 import ircbot
 from config import *
-from time import time
-from os import path, system
 import keywords, cmds, tasks
 from pyxmpp.jabber.muc import *
-from getpass import getpass,getuser
 from colors import colorize, notify
-import re, locale, codecs, pickle
-from random import choice,randint,shuffle
+import re
+from random import choice
 from markov import PidginLogs, MarkovChain
 
-def decode(str):
-    r = repr(str)
+def decode(string):
+    r = repr(string)
     return r[r.find("'")+1:r.rfind("'")]
 
 class GenericChatBot(object):

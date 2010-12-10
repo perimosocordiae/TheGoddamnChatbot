@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-import os.path
 import sys,re,subprocess
 from tgdcb.config import *
 from pyxmpp.all import JID
-from tgdcb.cmds import backticks
-from random import choice,random
 from getpass import getuser,getpass
 from tgdcb import mucroombot,ircbot
 from tgdcb.colors import colorize,notify
 from pyxmpp.jabber.muc import MucRoomHandler
-from tgdcb.markov import PidginLogs, MarkovChain
 
 class EvalRoomHandler(MucRoomHandler):
     def message_received(self, user, stanza):
@@ -53,10 +49,10 @@ print notify('!','y',"WARNING: this evalbot is NOT SECURE. Arbitrary code \
 lang = sys.argv[1]
 BOT_NAME = lang+'_bot'
 
-def runpipe(exe,input):
+def runpipe(exe,input_str):
     p = subprocess.Popen(exe,stdin=subprocess.PIPE,stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT,shell=True)
-    return p.communicate(input)[0].rstrip()
+    return p.communicate(input_str)[0].rstrip()
 
 def evalmsg(msg):
     m = re.match("%s(?:_bot)?[>:\-,]\s+(.+)"%lang,msg)
@@ -81,8 +77,10 @@ def evalmsg(msg):
 mucroombot.setup_localization()
 if ROOM_TYPE == 'MUC':
     jidname = getuser()+'@'+DOMAIN
-    while mucroombot.main(lambda: MucEvalClient(JID(jidname),getpass(),BOT_NAME)): pass
+    mk_client = lambda: MucEvalClient(JID(jidname),getpass(),BOT_NAME)
+    while mucroombot.main(mk_client): pass
 elif ROOM_TYPE == 'IRC':
-    while ircbot.main(lambda: IrcEvalClient(BOT_NAME)): pass
+    mk_client = lambda: IrcEvalClient(BOT_NAME)
+    while ircbot.main(mk_client): pass
 # vi: sts=4 et sw=4
 
