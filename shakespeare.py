@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import sys, re
+import re
 import os.path
+from sys import argv, exit
 from time import sleep
 from tgdcb.config import *
 from pyxmpp.all import JID
@@ -74,15 +75,24 @@ class ShakespeareClient(mucroombot.ChatClient):
 
 #end class
 
-if len(sys.argv) < 3:
-    print notify('!','r',"Usage: %s <name> <shakespeare_play(s)>"%sys.argv[0])
-    sys.exit(1)
+def main():
+    if len(argv) < 3:
+        print notify('!','r',"Usage: %s <name> <shakespeare_play(s)>"%argv[0])
+        print notify('i','y',"<name> - character name, 'will' for all chars")
+        print notify('i','y',"<play(s)> - 1+ plays (on shakespeare.mit.edu)")
+        exit(1)
+    if not DOMAIN or ROOM_TYPE != 'MUC':
+        print notify('!','r',"Error: Only MUC rooms are supported")
+        exit(2)
+    # use 'will' to grab all characters
+    nick = argv[1]
+    pages = (urlopen('http://shakespeare.mit.edu/%s/full.html'%play.lower()) \
+                for play in argv[2:])
+    jidname = getuser()+'@'+DOMAIN
+    mucroombot.setup_localization()
+    mk_bot = lambda: ShakespeareClient(JID(jidname),getpass(),pages,nick)
+    while mucroombot.main(mk_bot): pass
 
-# use 'will' to grab all characters
-nick = sys.argv[1]
-pages = (urlopen('http://shakespeare.mit.edu/%s/full.html'%play) for play in sys.argv[2:])
-jidname = getuser()+'@'+DOMAIN
-
-mucroombot.setup_localization()
-while mucroombot.main(lambda: ShakespeareClient(JID(jidname),getpass(),pages,nick)): pass
+if __name__ == '__main__':
+    main()
 # vi: sts=4 et sw=4
