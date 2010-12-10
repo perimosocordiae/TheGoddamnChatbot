@@ -18,6 +18,7 @@ class MucClient(mucroombot.ChatClient):
 if __name__ == '__main__':
     mucroombot.setup_localization()
     if ROOM_TYPE == 'MUC':
+        assert DOMAIN, "Must supply a domain, edit 'config' to set up"
         if len(sys.argv) == 1:
             nick = getuser()
             print notify('i','y',"Assuming you are "+nick)

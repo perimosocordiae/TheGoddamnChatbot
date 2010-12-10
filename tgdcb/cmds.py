@@ -76,9 +76,6 @@ def cmd_twitstat(obj,frm,txt):
     except Exception, e:
         return "Error getting twitter status for %s: %s"%(match.group(1),e)
 
-def cmd_train(obj,frm,txt):
-    return "\n"+backticks('~ccarey/train.rb').rstrip()
-
 def cmd_shutup(obj,frm,txt):
     obj.respond = False
     return "Zipping my lips"
@@ -90,19 +87,6 @@ def cmd_enable(obj,frm,txt):
     else:
         return "I was already able to talk, but thanks anyway"
 
-def cmd_lunch(obj,frm,txt):
-    hr,min = localtime()[3:5]
-    day = strftime("%A")
-    if hr > 12:
-        return "Isn't it a bit late for lunch?"
-    if day == 'Thursday':
-        place = 'Planet Sub for $2 Turkeys!'
-    else:
-        place = choice(['Bread Co','Cashew Kitty','Qdoba','Jimmy John\'s',
-                  'Cafe 4444','Coffee Cartel','Subway','Planet Sub','Pickles'])
-    return "I think you should go to %s."%place
-    
-#note: the urlopen call creates 8 garbages
 def cmd_weather(obj,frm,txt):
     match = re.match(".*weather\s+(\d+)",txt)
     if not match: return "Usage: !weather <zip_code>"
@@ -245,11 +229,9 @@ commands = {'calc': cmd_calc,
             'map': cmd_map,
             'reload': cmd_reload,
             'trends': cmd_trends,
-            'train': cmd_train, 'trains': cmd_train,
             'shutup': cmd_shutup, 'quiet': cmd_shutup,
             'resume': cmd_enable,
             'status': cmd_twitstat,
-            'lunch': cmd_lunch,
             'weather': cmd_weather,
             'news': cmd_news,
             'bash': cmd_bash,
