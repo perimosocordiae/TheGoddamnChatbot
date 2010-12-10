@@ -1,5 +1,5 @@
 import re, subprocess, gc
-import twython
+from twython.twython import Twython
 import keywords, cmds, tasks
 from time import time,localtime,strftime
 from datetime import datetime
@@ -62,9 +62,8 @@ def cmd_map(obj,frm,txt):
     loc = quote_plus(match.group(1))
     return "http://maps.google.com/maps?q=%s"%loc
 
-# note: twython.core.setup() creates 48 garbages per call
 def cmd_trends(obj,frm,txt):
-    json = twython.core.setup().getCurrentTrends()
+    json = Twython().getCurrentTrends()
     trends = [v['name'] for v in json['trends'].values()[0]]
     return "Current twitter trends:\n"+', '.join(trends)
 
@@ -72,7 +71,7 @@ def cmd_twitstat(obj,frm,txt):
     match = re.match(".*status\s+(\w+)",txt)
     if not match: return "Usage: !status <twitter_name>"
     try:
-        json = twython.core.setup().showUser(screen_name=match.group(1))
+        json = Twython().showUser(screen_name=match.group(1))
         return "Twitter status for %s:\n%s"%(match.group(1),json['status']['text'])
     except Exception, e:
         return "Error getting twitter status for %s: %s"%(match.group(1),e)
