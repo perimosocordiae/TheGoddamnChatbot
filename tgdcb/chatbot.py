@@ -1,11 +1,13 @@
-import ircbot
-from config import *
-import keywords, cmds, tasks
-from pyxmpp.jabber.muc import *
-from colors import colorize, notify
 import re
+import ircbot
+import keywords, cmds, tasks
+from time import strftime
 from random import choice
+from config import LOGDIR
+from colors import colorize, notify
 from markov import PidginLogs, MarkovChain
+from os.path import expanduser, join as join_path
+from pyxmpp.jabber.muc import *
 
 def decode(string):
     r = repr(string)
@@ -13,14 +15,24 @@ def decode(string):
 
 class GenericChatBot(object):
 
-    def __init__(self,name):
+    def __init__(self,name,log):
         self.name = name
+        self.log = log
+        if log:
+            self.logfile = join_path(expanduser(LOGDIR),
+                              '.'.join((name,strftime("%d%b%Y_%H"),'log')))
         self.keywords = keywords.keywords
         self.commands = cmds.commands
         self.respond = True
     
+    def write_log(self,frm,body):
+        with open(self.logfile,'a') as log:
+            print >>log, '\t'.join((strftime("%H:%M:%S"),frm,body))
+
     def message_received(self,frm,body):
         print colorize('k',frm+':'),body
+        if self.log:
+            self.write_log(frm,body)
 
         msg = None
         cmd_match = re.match("(?:%s\s*[:,;:->]+\s*|!)(\w+)"%self.name,body)
@@ -31,13 +43,13 @@ class GenericChatBot(object):
                 try:
                     msg = cmd(self,frm,body)
                 except Exception, e:
-                    print notify('!','r',"Error processing command: %s"%cmd_name)
+                    print notify('!','r',"Error processing command: "+cmd_name)
                     print e
         elif self.respond:
-            msgs = [self.keywords[kw](frm,body) for kw in self.keywords if kw in body]
+            msgs = [self.keywords[kw](frm,body) for kw in self.keywords \
+                                                       if kw in body]
             if len(msgs) > 0:
                 msg = choice(msgs)
-
         msgs = [msg]
         msgs.extend(task(self,body) for task in tasks.tasklist)
         return filter(None,msgs)
@@ -45,8 +57,9 @@ class GenericChatBot(object):
 
 class MucChatBot(GenericChatBot,MucRoomHandler):
 
-    def __init__(self, nick):
-        super(MucChatBot,self).__init__(nick)
+    def __init__(self, nick, log=False):
+        GenericChatBot.__init__(self,nick,log)
+        MucRoomHandler.__init__(self,nick)
         self.responder = MarkovChain(PidginLogs('~/.purple/logs/jabber/'))
 
     def message_received(self, user, stanza):
@@ -72,10 +85,10 @@ class MucChatBot(GenericChatBot,MucRoomHandler):
 
 class IrcChatBot(GenericChatBot,ircbot.ChatClient):
 
-    def __init__(self):
-        GenericChatBot.__init__(self,BOT_NAME)
-        ircbot.ChatClient.__init__(self,BOT_NAME)
-        self.responder = None # MarkovChain(PidginLogs('~/.purple/logs/irc/'))
+    def __init__(self, nick, log=False):
+        GenericChatBot.__init__(self,nick,log)
+        ircbot.ChatClient.__init__(self,nick)
+        self.responder = None
 
     def room_msg(self,frm,msg):
         for msg in GenericChatBot.message_received(self,frm,msg):

@@ -53,7 +53,10 @@ def cmd_art(obj,frm,txt):
     match = re.match(".*art\s+([^\s.,\n]+)",txt)
     if not match: return "Usage: !art <name>"
     art_name = match.group(1)
-    out = backticks('figlet -f banner '+art_name).rstrip().replace(' ','...')
+    try:
+        out = backticks('figlet -f banner '+art_name).rstrip().replace(' ','_')
+    except:
+        return "Hmm, does my host have figlet installed?"
     return "\n"+out
     
 def cmd_map(obj,frm,txt):

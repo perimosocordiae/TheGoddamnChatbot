@@ -30,7 +30,7 @@ def patch_pyxmpp():
     print 'All dependencies satisfied!'
     import pyxmpp
     path = pyxmpp.__path__[0]
-    sed_base = "sudo sed -i'.bak' -e's/class \(%s\)\:/class \1(object):/' %s/"
+    sed_base = "sudo sed -i'.bak' -e's/class \(%s\)\:/class \\1(object):/' %s/"
     Popen((sed_base+"client.py")%('Client',path),shell=True).communicate()
     Popen((sed_base+"jabber/muc.py")%('MucRoomHandler',path),
             shell=True).communicate()

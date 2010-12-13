@@ -19,8 +19,6 @@ def your_mom(frm,txt):
         return None
     mom = choice(['MOM','DAD','FACE','DOG','GRANDMOTHER','IMAGINARY FRIEND'])
     return "%s's %s%s"%(frm,mom,post_is)
-def charris(frm,txt):
-    return "PORK CHOP"
 def frown(frm,txt):
     return "@%s: turn that frown upside down! :P"%frm
 def xkcd(frm,txt):
@@ -65,7 +63,6 @@ def chkurl(frm,txt):
 keywords = {#' is ': your_mom,
             'anagram': anagrammer,
             #'cake': cake,
-            #'charris': charris,
             #':(': frown,
             #'xkcd': xkcd, 'raptor': xkcd,
             #'database': drop_tables,

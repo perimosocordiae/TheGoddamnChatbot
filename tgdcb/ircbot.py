@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import re,socket
 from config import *
-from colors import notify
+from colors import notify, colorize
 
 class ChatClient(object):
 
@@ -22,6 +22,12 @@ class ChatClient(object):
 
     def send(self,msg,nick=ROOM):
         if not msg: return
+        try: 
+            msg = msg.decode('ascii')
+            print colorize('g',"me:"),msg
+        except: 
+            print "couldn't send:",repr(msg)
+            msg = "Sorry, I can't handle unicode"
         for line in (x for x in msg.split("\n") if len(x) > 0):
             self.sock.send("PRIVMSG %s :%s\r\n"%(nick,line))
 

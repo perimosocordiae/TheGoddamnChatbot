@@ -1,6 +1,6 @@
 
 BOT_NAME = 'chatbot'
-
+LOGDIR = '.'
 ROOM_TYPE = 'IRC'
 if ROOM_TYPE == 'IRC':
     PORT = 6667
