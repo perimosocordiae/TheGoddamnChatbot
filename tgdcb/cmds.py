@@ -1,21 +1,31 @@
 import re, subprocess, gc
-from twython.twython import Twython
 import keywords, cmds, tasks
+from os import getpid
+from math import modf
 from time import time,localtime,strftime
-from datetime import datetime
-from dateutil.parser import parse as dateparse
-from dateutil.relativedelta import relativedelta
+from psutil import get_process_list
 from random import choice,randint
 from urllib import quote_plus
 from urllib2 import urlopen
-from htmlunescape import unescape_to_fixed_point as unescape
 from cthulhu import blargltext
-from math import modf
-from psutil import get_process_list
+from datetime import datetime, timedelta
+from dateutil.parser import parse as dateparse
+from dateutil.relativedelta import relativedelta
+from htmlunescape import unescape_to_fixed_point as unescape
+from twython.twython import Twython
 
 def backticks(cmd):
     '''emulate perl/ruby's `cmd` style'''
     return subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True).communicate()[0]
+
+def cmd_uptime(obj,frm,txt):
+    etime = backticks('ps -p %d -o etime'%getpid()).split()[1]
+    m = re.match(r'(?:(\d+)-)?(?:(\d\d):)?(\d\d):(\d\d)',etime)
+    if not m: return "Strangely formatted uptime: "+etime
+    days,hrs,mins,secs = [int(x) if x else 0 for x in m.groups()]
+    td = timedelta(days,secs,0,0,mins,hrs)
+    fmtstr = "I've been online for %s hours, %s minutes, and %s seconds"
+    return fmtstr % tuple(str(td).split(':'))
 
 def cmd_reload(obj,frm,txt):
     try:
@@ -227,26 +237,36 @@ def cmd_cthulhu(obj,frm,txt):
     if not match: return "Usage: !blargl <text>"
     return blargltext(match.group(1))
 
-commands = {'calc': cmd_calc,
-            'art': cmd_art,
-            'map': cmd_map,
-            'reload': cmd_reload,
-            'trends': cmd_trends,
-            'shutup': cmd_shutup, 'quiet': cmd_shutup,
-            'resume': cmd_enable,
-            'status': cmd_twitstat,
-            'weather': cmd_weather,
-            'news': cmd_news,
-            'bash': cmd_bash,
-            'commands': cmd_cmds, 'cmds': cmd_cmds, 'triggers': cmd_cmds,
-            'lmgtfy': cmd_lmgtfy,
-            'parrot': cmd_parrot,
-            'random': cmd_random,
-            'calendar': cmd_calendar,
-            'timecalc': cmd_timecalc, 'tcalc': cmd_timecalc,
-            'gc':cmd_gc, 'collect':cmd_gc,
-            'rusage':cmd_rusage,
-            'countdown':cmd_countdown,
-            'blargl':cmd_cthulhu,
+def cmd_roll(obj,frm,txt):
+    match = re.match(".*?roll\s+(\d+)d(\d+)",txt)
+    if not match: return "Usage: !roll <number>d<sides>"
+    n,s = map(int,match.groups())
+    roll = sum(randint(1,s) for _ in xrange(n))
+    an = 'an' if (str(roll)[0] == '8' or roll == 18) else 'a'
+    return "%s rolled %s %d." % (frm,an,roll)
+
+commands = {
+    'gc': cmd_gc,
+    'map': cmd_map,
+    'calc': cmd_calc,
+    'news': cmd_news,
+    'roll': cmd_roll,
+    'blargl': cmd_cthulhu,
+    'lmgtfy': cmd_lmgtfy,
+    'parrot': cmd_parrot,
+    'quotes': cmd_bash,
+    'random': cmd_random,
+    'reload': cmd_reload,
+    'resume': cmd_enable,
+    'rusage': cmd_rusage,
+    'shutup': cmd_shutup, 'quiet': cmd_shutup,
+    'status': cmd_twitstat,
+    'trends': cmd_trends,
+    'uptime': cmd_uptime,
+    'weather': cmd_weather,
+    'calendar': cmd_calendar,
+    'commands': cmd_cmds, 'triggers': cmd_cmds,
+    'countdown': cmd_countdown,
+    'timecalc': cmd_timecalc, 'tcalc': cmd_timecalc,
 }
 
