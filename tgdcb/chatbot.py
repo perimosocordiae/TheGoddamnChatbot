@@ -23,6 +23,7 @@ class GenericChatBot(object):
                               '.'.join((name,strftime("%d%b%Y_%H"),'log')))
         self.keywords = keywords.keywords
         self.commands = cmds.commands
+        self.greetings = keywords.greetings
         self.respond = True
     
     def write_log(self,frm,body):
@@ -53,7 +54,16 @@ class GenericChatBot(object):
         msgs = [msg]
         msgs.extend(task(self,body) for task in tasks.tasklist)
         return filter(None,msgs)
+
+    def user_joined(self, who):
+        print colorize('y',who), "joined the room"
+        if self.log:
+            self.write_log(who,"***joined")
+        if self.respond and who != self.name:
+            return choice(self.greetings) % who
+
 #end
+
 
 class MucChatBot(GenericChatBot,MucRoomHandler):
 
@@ -76,7 +86,11 @@ class MucChatBot(GenericChatBot,MucRoomHandler):
         except: print "me:",decode(msg)
         self.room_state.send_message(msg)
 
-    def user_joined(self, user, stanza): pass
+    def user_joined(self, user, stanza):
+        if not user: return
+        frm = decode(user.nick)
+        self.send(GenericChatBot.user_joined(self,frm))
+
     def user_left(self, user, stanza): pass
     
     def nick_changed(self, user, old_nick, stanza):
@@ -98,3 +112,5 @@ class IrcChatBot(GenericChatBot,ircbot.ChatClient):
         for msg in GenericChatBot.message_received(self,frm,msg):
             self.send(msg,frm)
 
+    def join(self,frm,channel):
+        self.send(GenericChatBot.user_joined(self,frm))

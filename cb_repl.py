@@ -22,7 +22,8 @@ readline.set_completer(complete)
 
 while True:
     try:
-        txt = raw_input('>> ')
+        txt = raw_input('>> ').strip()
+        if not txt: continue
         cmd = txt.split()[0]
         if cmd[0] is '!': cmd = cmd[1:]
         print commands[cmd](None,uname,txt) # no ChatBot object to pass

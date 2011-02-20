@@ -136,7 +136,7 @@ def get_quote(page):
     return rating,[unescape(q) for q in quote]
 
 def cmd_bash(obj,frm,txt):
-    match = re.match(".*bash\s*(\d*)",txt)
+    match = re.match(".*quotes?\s*(\d*)",txt)
     min_rating = int(match.group(1)) if match.group(1) != '' else 1000
     if min_rating > 10000: min_rating = 10000
     url = 'http://bash.org/?random1'
@@ -170,9 +170,10 @@ def cmd_random(obj,frm,txt):
     if 0 < len(input) < 3:
         num1 = int(input[0])
         num2 = int(input[1]) if len(input) == 2 else 0
-        return randint(num1,num2) if num1 <= num2 else randint(num2,num1)
+        n = randint(num1,num2) if num1 <= num2 else randint(num2,num1)
     else:
-        return choice(input)
+        n = choice(input)
+    return str(n)
 
 def cmd_calendar(obj,frm,txt):
     out = backticks('calendar').rstrip()

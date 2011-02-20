@@ -72,3 +72,7 @@ keywords = {#' is ': your_mom,
             ':w': vim_save,
             'http': chkurl,
 }
+
+greetings = [ "Hello %s", "Hi, %s!", "Aloha, %s", "%s o/", "Look, it's %s!",
+        "I, for one, welcome our new %s overlord!", "Welcome, %s.",
+        "Nice to see you, %s", "O hai %s!", "%s: welcome" ]
